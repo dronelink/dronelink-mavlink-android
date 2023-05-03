@@ -1,0 +1,71 @@
+apply plugin: 'com.android.library'
+
+configurations {
+    checkstyleClasspath
+}
+
+android {
+    compileSdkVersion 31
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 31
+        versionCode 2
+        versionName "1.1"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+task checkstyle(type: Checkstyle) {
+    configFile = rootProject.file("config/checkstyle/checkstyle.xml")
+    source 'src'
+    include '**/*.java'
+    exclude '**/gen/**'
+
+    classpath = project.files()
+    checkstyleClasspath = project.configurations.checkstyleClasspath
+
+    maxWarnings 0
+
+    reports {
+        xml.enabled true
+        xml.destination new File("$project.buildDir/reports/checkstyle/checkstyle_report.xml")
+
+        html.enabled true
+        html.destination new File("$project.buildDir/reports/checkstyle/checkstyle_report.html")
+    }
+}
+
+build.dependsOn 'checkstyle'
+
+dependencies {
+    checkstyleClasspath 'com.puppycrawl.tools:checkstyle:8.17'
+
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+    implementation 'com.github.tony19:logback-android:2.0.0'
+    implementation 'com.google.android.material:material:1.2.0'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-annotation-v9:0.9.0'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:9.7.2'
+    //implementation 'com.mapbox.mapboxsdk:mapbox-android-telemetry:6.1.0'
+    implementation 'io.mavsdk:mavsdk:1.2.0'
+    implementation 'io.mavsdk:mavsdk-server:1.2.1'
+    implementation 'org.slf4j:slf4j-api:1.7.28'
+    implementation 'com.github.dronelink:dronelink-core-android:4.4.0'
+
+    testImplementation 'junit:junit:4.13'
+
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    androidTestImplementation 'androidx.test:runner:1.2.0'
+}
