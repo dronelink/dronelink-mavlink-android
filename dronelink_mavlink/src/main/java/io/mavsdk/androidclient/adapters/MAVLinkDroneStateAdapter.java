@@ -19,16 +19,17 @@ import java.util.UUID;
 import io.mavsdk.System;
 import io.mavsdk.androidclient.DronelinkMAVLink;
 import io.mavsdk.info.Info;
+import io.mavsdk.telemetry.Telemetry;
 
 public class MAVLinkDroneStateAdapter implements DroneStateAdapter {
 
     private final Context context;
     private final System drone;
-    public DatedValue<System> flightControllerState;
+    public DatedValue<Telemetry> flightControllerState;
 //    public DatedValue<AirSenseSystemInformation> flightControllerAirSenseState;
     public DatedValue<List<Message>> diagnosticsInformationMessages;
-//    public DatedValue<CompassState> compassState;
-//    public DatedValue<BatteryState> batteryState;
+    public DatedValue<Telemetry.Heading> compassState;
+    public DatedValue<Telemetry.Battery> batteryState;
 //    public DatedValue<VisionDetectionState> visionDetectionState;
     public DatedValue<Integer> maxFlightHeight;
     public DatedValue<Integer> uplinkSignalQuality;
@@ -61,7 +62,7 @@ public class MAVLinkDroneStateAdapter implements DroneStateAdapter {
     public List<Message> getStatusMessages() {
         final List<Message> messages = new ArrayList<>();
 
-        final DatedValue<Info> flightControllerState = this.flightControllerState;
+        final DatedValue<Telemetry> flightControllerState = this.flightControllerState;
         if (flightControllerState != null && flightControllerState.value != null) {
             messages.addAll(DronelinkMAVLink.getStatusMessages(context, flightControllerState.value));
         }
@@ -76,13 +77,13 @@ public class MAVLinkDroneStateAdapter implements DroneStateAdapter {
             }
         }
 
-        final DatedValue<AirSenseSystemInformation> airSenseState = flightControllerAirSenseState;
-        if (airSenseState != null && airSenseState.value != null) {
-            final List<Message> statusMessages = DronelinkMAVLink.getStatusMessages(context, airSenseState.value);
-            if (!statusMessages.isEmpty()) {
-                messages.addAll(statusMessages);
-            }
-        }
+//        final DatedValue<AirSenseSystemInformation> airSenseState = flightControllerAirSenseState;
+//        if (airSenseState != null && airSenseState.value != null) {
+//            final List<Message> statusMessages = DronelinkMAVLink.getStatusMessages(context, airSenseState.value);
+//            if (!statusMessages.isEmpty()) {
+//                messages.addAll(statusMessages);
+//            }
+//        }
 
         final DatedValue<List<Message>> diagnosticMessages = this.diagnosticsInformationMessages;
         if (diagnosticMessages != null && diagnosticMessages.value != null) {
@@ -273,12 +274,12 @@ public class MAVLinkDroneStateAdapter implements DroneStateAdapter {
 
     @Override
     public Double getBatteryPercent() {
-        final DatedValue<BatteryState> batteryState = this.batteryState;
+        final DatedValue<Telemetry.Battery> batteryState = this.batteryState;
         if (batteryState == null) {
             return null;
         }
 
-        return (double)batteryState.value.getChargeRemainingInPercent() / 100.0;
+        return (double)batteryState.value.getRemainingPercent() / 100.0;
     }
 
     @Override

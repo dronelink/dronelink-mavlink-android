@@ -19,6 +19,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import io.mavsdk.System;
+import io.mavsdk.androidclient.DronelinkMAVLink;
 import io.mavsdk.manual_control.ManualControl;
 
 public class MAVLinkDroneAdapter implements DroneAdapter {
@@ -85,7 +86,7 @@ public class MAVLinkDroneAdapter implements DroneAdapter {
 
     @Override
     public Integer getCameraChannel(final Integer videoFeedChannel) {
-        if (!DronelinkDJI.isMultipleVideoFeedsEnabled(drone)) {
+        if (!DronelinkMAVLink.isMultipleVideoFeedsEnabled(drone)) {
             return 0;
         }
 

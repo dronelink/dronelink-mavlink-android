@@ -1,61 +1,12 @@
 package io.mavsdk.androidclient;
 
 import android.content.Context;
-import android.location.Location;
 
-import androidx.annotation.Nullable;
-
-import com.dronelink.core.Convert;
-import com.dronelink.core.Dronelink;
 import com.dronelink.core.command.CommandError;
-import com.dronelink.core.kernel.command.drone.OcuSyncVideoFeedSourcesDroneCommand;
-import com.dronelink.core.kernel.component.DJIWaypointMissionComponent;
-import com.dronelink.core.kernel.component.DJIWaypointMissionComponentWaypoint;
-import com.dronelink.core.kernel.component.DJIWaypointMissionComponentWaypointAction;
-import com.dronelink.core.kernel.core.GeoCoordinate;
 import com.dronelink.core.kernel.core.Message;
-import com.dronelink.core.kernel.core.enums.CameraAEBCount;
-import com.dronelink.core.kernel.core.enums.CameraAperture;
-import com.dronelink.core.kernel.core.enums.CameraBurstCount;
-import com.dronelink.core.kernel.core.enums.CameraColor;
-import com.dronelink.core.kernel.core.enums.CameraDisplayMode;
-import com.dronelink.core.kernel.core.enums.CameraExposureCompensation;
-import com.dronelink.core.kernel.core.enums.CameraExposureMode;
-import com.dronelink.core.kernel.core.enums.CameraFileIndexMode;
-import com.dronelink.core.kernel.core.enums.CameraFocusMode;
-import com.dronelink.core.kernel.core.enums.CameraISO;
-import com.dronelink.core.kernel.core.enums.CameraMeteringMode;
-import com.dronelink.core.kernel.core.enums.CameraMode;
-import com.dronelink.core.kernel.core.enums.CameraPhotoAspectRatio;
-import com.dronelink.core.kernel.core.enums.CameraPhotoFileFormat;
-import com.dronelink.core.kernel.core.enums.CameraPhotoMode;
-import com.dronelink.core.kernel.core.enums.CameraShutterSpeed;
-import com.dronelink.core.kernel.core.enums.CameraStorageLocation;
-import com.dronelink.core.kernel.core.enums.CameraVideoFieldOfView;
-import com.dronelink.core.kernel.core.enums.CameraVideoFileCompressionStandard;
-import com.dronelink.core.kernel.core.enums.CameraVideoFileFormat;
-import com.dronelink.core.kernel.core.enums.CameraVideoFrameRate;
-import com.dronelink.core.kernel.core.enums.CameraVideoMode;
-import com.dronelink.core.kernel.core.enums.CameraVideoResolution;
-import com.dronelink.core.kernel.core.enums.CameraVideoStandard;
-import com.dronelink.core.kernel.core.enums.CameraVideoStreamSource;
-import com.dronelink.core.kernel.core.enums.CameraWhiteBalancePreset;
-import com.dronelink.core.kernel.core.enums.DJIWaypointActionType;
-import com.dronelink.core.kernel.core.enums.DJIWaypointMissionFinishedAction;
-import com.dronelink.core.kernel.core.enums.DJIWaypointMissionFlightPathMode;
-import com.dronelink.core.kernel.core.enums.DJIWaypointMissionGotoWaypointMode;
-import com.dronelink.core.kernel.core.enums.DJIWaypointMissionHeadingMode;
-import com.dronelink.core.kernel.core.enums.DJIWaypointTurnMode;
-import com.dronelink.core.kernel.core.enums.DroneConnectionFailSafeBehavior;
-import com.dronelink.core.kernel.core.enums.DroneLightbridgeChannelSelectionMode;
-import com.dronelink.core.kernel.core.enums.DroneLightbridgeFrequencyBand;
-import com.dronelink.core.kernel.core.enums.DroneOcuSyncChannelSelectionMode;
-import com.dronelink.core.kernel.core.enums.DroneOcuSyncFrequencyBand;
-import com.dronelink.core.kernel.core.enums.VideoFeedSource;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import io.mavsdk.telemetry.Telemetry;
 import io.reactivex.Flowable;
@@ -1896,112 +1847,112 @@ public class DronelinkMAVLink {
 //        return new Message(context.getString(R.string.DronelinkDJI_DJIWaypointMissionState_title), details, level);
 //    }
 
-//    public static List<Message> getStatusMessages(final Context context, final FlightControllerState state) {
-//        final List<Message> messages = new ArrayList<>();
-//
-//        final Message goHomeExecutionStateMessage = DronelinkDJI.getMessage(context, state.getGoHomeExecutionState());
-//        if (goHomeExecutionStateMessage != null) {
-//            if (state.getFlightMode() == FlightMode.CONFIRM_LANDING) {
-//            }
-//            else {
-//                messages.add(goHomeExecutionStateMessage);
-//            }
-//        }
-//        else {
-//            if (state.isLowerThanSeriousBatteryWarningThreshold()) {
-//                messages.add(new Message(context.getString(R.string.DJIDronelink_DJIFlightControllerState_statusMessages_isLowerThanSeriousBatteryWarningThreshold_title), Message.Level.DANGER));
-//            }
-//            else if (state.isLowerThanBatteryWarningThreshold()) {
-//                messages.add(new Message(context.getString(R.string.DJIDronelink_DJIFlightControllerState_statusMessages_isLowerThanBatteryWarningThreshold_title), Message.Level.WARNING));
-//            }
-//
-//            if (state.hasReachedMaxFlightRadius()) {
-//                messages.add(new Message(context.getString(R.string.DJIDronelink_DJIFlightControllerState_statusMessages_hasReachedMaxFlightRadius_title), Message.Level.WARNING));
-//            }
-//
-//            if (state.hasReachedMaxFlightHeight()) {
-//                messages.add(new Message(context.getString(R.string.DJIDronelink_DJIFlightControllerState_statusMessages_hasReachedMaxFlightHeight_title), Message.Level.WARNING));
-//            }
-//
-//            if (DronelinkDJI.isWaypointOperatorCurrentState(new WaypointMissionState[] { WaypointMissionState.UPLOADING })) {
-//                final Message message = DronelinkDJI.getMessage(context, DJISDKManager.getInstance().getMissionControl().getWaypointMissionOperator().getCurrentState());
-//                if (message != null) {
-//                    messages.add(message);
-//                }
-//            }
-//
-//            switch (state.getFlightMode()) {
-//
-//                case ASSISTED_TAKEOFF:
-//                case AUTO_TAKEOFF:
-//                case AUTO_LANDING:
-//                case MOTORS_JUST_STARTED:
-//                case CONFIRM_LANDING:
-//                    break;
-//
-//                case GPS_WAYPOINT:
-//                    final MissionControl missionControl = DJISDKManager.getInstance().getMissionControl();
-//                    if (missionControl != null) {
-//                        final Message message = DronelinkDJI.getMessage(context, missionControl.getWaypointMissionOperator().getCurrentState());
-//                        if (message != null) {
-//                            messages.add(message);
-//                        }
-//                    }
-//                    break;
-//
-//                case MANUAL:
-//                case ATTI:
-//                case ATTI_COURSE_LOCK:
-//                case ATTI_HOVER:
-//                case HOVER:
-//                case GPS_BLAKE:
-//                case GPS_ATTI:
-//                case GPS_COURSE_LOCK:
-//                case GPS_HOME_LOCK:
-//                case GPS_HOT_POINT:
-//                case ATTI_LANDING:
-//                case GO_HOME:
-//                case CLICK_GO:
-//                case JOYSTICK:
-//                case GPS_ATTI_WRISTBAND:
-//                case CINEMATIC:
-//                case ATTI_LIMITED:
-//                case DRAW:
-//                case GPS_FOLLOW_ME:
-//                case ACTIVE_TRACK:
-//                case TAP_FLY:
-//                case PANO:
-//                case FARMING:
-//                case FPV:
-//                case GPS_SPORT:
-//                case GPS_NOVICE:
-//                case TERRAIN_FOLLOW:
-//                case PALM_CONTROL:
-//                case QUICK_SHOT:
-//                case TRIPOD:
-//                case TRACK_SPOTLIGHT:
-//                case DETOUR:
-//                case TIME_LAPSE:
-//                case POI2:
-//                case OMNI_MOVING:
-//                case ADSB_AVOIDING:
-//                case SMART_TRACK:
-//                case MOTOR_STOP_LANDING:
-//                case UNKNOWN:
-//                    break;
-//            }
-//
-//            if (state.getAircraftLocation() == null) {
-//                messages.add(new Message(context.getString(R.string.DronelinkDJI_DJIFlightControllerState_statusMessages_locationUnavailable_title), context.getString(R.string.DronelinkDJI_DJIFlightControllerState_statusMessages_locationUnavailable_details), Message.Level.DANGER));
-//            }
-//
-//            if (!state.isHomeLocationSet()) {
-//                messages.add(new Message(context.getString(R.string.DJIDronelink_DJIFlightControllerState_statusMessages_homeLocationNotSet_title), Message.Level.DANGER));
-//            }
-//        }
-//
-//        return messages;
-//    }
+    public static List<Message> getStatusMessages(final Context context, final Telemetry state) {
+        final List<Message> messages = new ArrayList<>();
+
+        final Message goHomeExecutionStateMessage = DronelinkDJI.getMessage(context, state.getGoHomeExecutionState());
+        if (goHomeExecutionStateMessage != null) {
+            if (state.getFlightMode() == FlightMode.CONFIRM_LANDING) {
+            }
+            else {
+                messages.add(goHomeExecutionStateMessage);
+            }
+        }
+        else {
+            if (state.isLowerThanSeriousBatteryWarningThreshold()) {
+                messages.add(new Message(context.getString(R.string.DJIDronelink_DJIFlightControllerState_statusMessages_isLowerThanSeriousBatteryWarningThreshold_title), Message.Level.DANGER));
+            }
+            else if (state.isLowerThanBatteryWarningThreshold()) {
+                messages.add(new Message(context.getString(R.string.DJIDronelink_DJIFlightControllerState_statusMessages_isLowerThanBatteryWarningThreshold_title), Message.Level.WARNING));
+            }
+
+            if (state.hasReachedMaxFlightRadius()) {
+                messages.add(new Message(context.getString(R.string.DJIDronelink_DJIFlightControllerState_statusMessages_hasReachedMaxFlightRadius_title), Message.Level.WARNING));
+            }
+
+            if (state.hasReachedMaxFlightHeight()) {
+                messages.add(new Message(context.getString(R.string.DJIDronelink_DJIFlightControllerState_statusMessages_hasReachedMaxFlightHeight_title), Message.Level.WARNING));
+            }
+
+            if (DronelinkDJI.isWaypointOperatorCurrentState(new WaypointMissionState[] { WaypointMissionState.UPLOADING })) {
+                final Message message = DronelinkDJI.getMessage(context, DJISDKManager.getInstance().getMissionControl().getWaypointMissionOperator().getCurrentState());
+                if (message != null) {
+                    messages.add(message);
+                }
+            }
+
+            switch (state.getFlightMode()) {
+
+                case ASSISTED_TAKEOFF:
+                case AUTO_TAKEOFF:
+                case AUTO_LANDING:
+                case MOTORS_JUST_STARTED:
+                case CONFIRM_LANDING:
+                    break;
+
+                case GPS_WAYPOINT:
+                    final MissionControl missionControl = DJISDKManager.getInstance().getMissionControl();
+                    if (missionControl != null) {
+                        final Message message = DronelinkDJI.getMessage(context, missionControl.getWaypointMissionOperator().getCurrentState());
+                        if (message != null) {
+                            messages.add(message);
+                        }
+                    }
+                    break;
+
+                case MANUAL:
+                case ATTI:
+                case ATTI_COURSE_LOCK:
+                case ATTI_HOVER:
+                case HOVER:
+                case GPS_BLAKE:
+                case GPS_ATTI:
+                case GPS_COURSE_LOCK:
+                case GPS_HOME_LOCK:
+                case GPS_HOT_POINT:
+                case ATTI_LANDING:
+                case GO_HOME:
+                case CLICK_GO:
+                case JOYSTICK:
+                case GPS_ATTI_WRISTBAND:
+                case CINEMATIC:
+                case ATTI_LIMITED:
+                case DRAW:
+                case GPS_FOLLOW_ME:
+                case ACTIVE_TRACK:
+                case TAP_FLY:
+                case PANO:
+                case FARMING:
+                case FPV:
+                case GPS_SPORT:
+                case GPS_NOVICE:
+                case TERRAIN_FOLLOW:
+                case PALM_CONTROL:
+                case QUICK_SHOT:
+                case TRIPOD:
+                case TRACK_SPOTLIGHT:
+                case DETOUR:
+                case TIME_LAPSE:
+                case POI2:
+                case OMNI_MOVING:
+                case ADSB_AVOIDING:
+                case SMART_TRACK:
+                case MOTOR_STOP_LANDING:
+                case UNKNOWN:
+                    break;
+            }
+
+            if (state.getAircraftLocation() == null) {
+                messages.add(new Message(context.getString(R.string.DronelinkDJI_DJIFlightControllerState_statusMessages_locationUnavailable_title), context.getString(R.string.DronelinkDJI_DJIFlightControllerState_statusMessages_locationUnavailable_details), Message.Level.DANGER));
+            }
+
+            if (!state.isHomeLocationSet()) {
+                messages.add(new Message(context.getString(R.string.DJIDronelink_DJIFlightControllerState_statusMessages_homeLocationNotSet_title), Message.Level.DANGER));
+            }
+        }
+
+        return messages;
+    }
 
 //    public static List<Message> getStatusMessages(final Context context, final AirSenseSystemInformation state) {
 //        final List<Message> messages = new ArrayList<>();
